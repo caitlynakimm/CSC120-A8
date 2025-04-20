@@ -3,21 +3,35 @@ import java.util.ArrayList;
 import java.util.NoSuchElementException;
 
 public class House extends Building implements HouseRequirements{
-  protected ArrayList<Student> residents; // The <Student> tells Java what kind of data we plan to store IN the ArrayList
-  protected boolean hasDiningRoom;
+  private ArrayList<Student> residents; // The <Student> tells Java what kind of data we plan to store IN the ArrayList
+  private boolean hasDiningRoom;
+  private boolean hasElevator;
   
   /**
+   * Full constructor
    * Constructs a House with specified attributes
    * @param name Name of the house
    * @param address Physical address of the house
    * @param nFloors Number of floors in the house
    * @param hasDiningRoom Whether the house has a dining room
+   * @param hasElevator Whether the house has an elevator
    */
-  public House(String name, String address, int nFloors, boolean hasDiningRoom) {
+  public House(String name, String address, int nFloors, boolean hasDiningRoom, boolean hasElevator) {
     super(name, address, nFloors); //call superclass constructor with name, address, and nFloors parameters
     this.residents = new ArrayList<Student>(); //initialize ArrayList residents
     this.hasDiningRoom = hasDiningRoom; //initalize new parameter hasDiningRoom;
+    this.hasElevator = hasElevator;
     System.out.println("You have built a house: 🏠");
+  }
+
+  /* Overloaded constructor with name, address */
+  public House(String name, String address) {
+    this(name, address, 3, false, false); // Call full constructor with hard-coded # floors and no dining room and elevator
+  }
+
+  /* Overloaded constructor with name, address, hasDiningRoom */
+  public House(String name, String address, boolean hasDiningRoom) {
+    this(name, address, 4, hasDiningRoom, false); // Call full constructor with hard-coded # floors and no elevator
   }
 
   /**
@@ -84,8 +98,21 @@ public class House extends Building implements HouseRequirements{
     return false;
   }
 
+  public void goToFloor(int floorNum) {
+    if (this.activeFloor != -1) {
+      if (floorNum > this.activeFloor + 1 && this.hasElevator != true){
+        throw new RuntimeException("There is no elevator. You must climb multiple stairs to reach floor #" + floorNum + "." );
+      }
+    }
+    super.goToFloor(floorNum);
+  }
+
+  public void showOptions(){
+    System.out.println("Available options at " + this.name + ":\n + enter() \n + exit() \n + goUp() \n + goDown()\n + goToFloor(n)");
+  }
+
   public static void main(String[] args) {
-    House gillett = new House("Gillett", "Elm St", 5, true);
+    House gillett = new House("Gillett", "49 Elm St, Northampton, MA 01063", 5, true, true);
     System.out.println(gillett);
 
     Student jenica = new Student("Jenica", "9901wee", 2028);
@@ -107,5 +134,12 @@ public class House extends Building implements HouseRequirements{
     Student removed = gillett.moveOut(jenica);
         System.out.println("Removed: " + removed);
         System.out.println("Residents left: " + gillett.nResidents());
+        
+    gillett.showOptions();
+    gillett.enter();
+    gillett.goUp();
+    gillett.goToFloor(5);
+    gillett.goDown();
+    gillett.exit();
   }
 }

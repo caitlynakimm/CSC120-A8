@@ -5,17 +5,31 @@ import java.util.NoSuchElementException;
 
 public class Library extends Building implements LibraryRequirements{
     private Hashtable<String, Boolean> collection;
+    private boolean hasElevator;
 
     /**
+     * Full constructor
      * Constructs a Library with specified attributes
      * @param name Name of the library
      * @param address Physical address of the library
      * @param nFloors Number of floors in the library
+     * @param hasElevator Whether library has an elevator
      */
-    public Library(String name, String address, int nFloors) {
+    public Library(String name, String address, int nFloors, boolean hasElevator) {
       super(name, address, nFloors);
       this.collection = new Hashtable<>();
+      this.hasElevator = hasElevator;
       System.out.println("You have built a library: 📖");
+    }
+
+    /* Overloaded constructor with name, address, nFloors */
+    public Library(String name, String address, int nFloors) {
+      this(name, address, nFloors, true); // Call full constructor with elevator
+    }
+
+    /* Overloaded constructor with name */
+    public Library(String name) {
+      this(name, "<Address Unknown>", 3, true); // Call full constructor with default address and elevator and hard-coded # floors
     }
 
     /**
@@ -116,8 +130,21 @@ public class Library extends Building implements LibraryRequirements{
         System.out.println("---------------------------");
     }
   
+    public void goToFloor(int floorNum) {
+      if (this.activeFloor != -1) {
+        if (floorNum > this.activeFloor + 1 && this.hasElevator != true){
+          throw new RuntimeException("There is no elevator. You must climb multiple stairs to reach floor #" + floorNum + "." );
+        }
+      }
+      super.goToFloor(floorNum);
+    }
+  
+    public void showOptions(){
+      System.out.println("Available options at " + this.name + ":\n + enter() \n + exit() \n + goUp() \n + goDown()\n + goToFloor(n)");
+    }
+
     public static void main(String[] args) {
-    Library neilson = new Library("Neilson Library", "7 Neilson Drive", 4);
+    Library neilson = new Library("Neilson Library", "7 Neilson Drive", 5, true);
     
     neilson.addTitle("Pachinko");
     neilson.addTitle("The Vegetarian");
@@ -140,6 +167,14 @@ public class Library extends Building implements LibraryRequirements{
     System.out.println("\nRemoved book: " + removedBook);
     System.out.println("\nFinal collection:");
     neilson.printCollection();
+
+    neilson.showOptions();
+    neilson.enter();
+    neilson.goUp();
+    neilson.goToFloor(5);
+    neilson.goUp();
+    neilson.goDown();
+    neilson.exit();
     }
   
   }
